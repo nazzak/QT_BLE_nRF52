@@ -4,8 +4,12 @@
 #include "defines.h"
 #include <QObject>
 #include <QBluetoothDeviceDiscoveryAgent>
+#include <QLowEnergyController>
 #include <QList>
-#include "deviceinfo.h"
+
+
+class DeviceHandler;
+class DeviceInfo;
 
 class central : public QObject
 {
@@ -17,8 +21,10 @@ public:
 public:
     QBluetoothDeviceDiscoveryAgent * m_deviceDiscoveryAgent;
     QList<DeviceInfo *> m_devices;
-
-signals:
+    QLowEnergyController * m_controller;
+    
+    DeviceInfo * m_nRFDevice;
+    DeviceHandler * m_nRFHandler;
 
 public slots:
     void addDevice(const QBluetoothDeviceInfo &device);

@@ -28,10 +28,12 @@ SOURCES += \
         main.cpp \
         view.cpp \
     central.cpp \
-    deviceinfo.cpp
+    deviceinfo.cpp \
+    devicehandler.cpp
 
 HEADERS += \
         view.h \
     central.h \
     deviceinfo.h \
-    defines.h
+    defines.h \
+    devicehandler.h

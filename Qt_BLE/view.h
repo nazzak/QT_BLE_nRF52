@@ -18,7 +18,7 @@ public:
     QVBoxLayout m_vBox;
     QPushButton * m_scan;
     QPushButton * m_reset;
-    central * m_control;
+    central * m_central;
 public slots:
     void slScanButton();
     void slResetScan();

@@ -3,7 +3,7 @@
 View::View(QWidget *parent)
     : QWidget(parent)
 {
-    m_control = Q_NULLPTR;
+    m_central = Q_NULLPTR;
 
     m_scan = new QPushButton("SCAN", this);
     m_reset = new QPushButton("RESET", this);
@@ -19,11 +19,11 @@ View::View(QWidget *parent)
 
 View::~View()
 {
-    delete m_control;
+    delete m_central;
     delete m_scan;
     delete m_reset;
 
-    m_control = Q_NULLPTR;
+    m_central = Q_NULLPTR;
     m_scan = Q_NULLPTR;
     m_reset = Q_NULLPTR;
 
@@ -33,8 +33,8 @@ View::~View()
 void View::slScanButton()
 {
     m_scan->setEnabled(false);
-    m_control = new central(this);
-    emit m_control->slStartScanning();
+    m_central = new central(this);
+    emit m_central->slStartScanning();
 }
 
 void View::slResetScan()
@@ -42,9 +42,9 @@ void View::slResetScan()
     qDebug() << "Reset Scanning";
     m_scan->setEnabled(true);
 
-    if(m_control){
-        delete m_control;
-        m_control = Q_NULLPTR;
+    if(m_central){
+        delete m_central;
+        m_central = Q_NULLPTR;
     }
 
 }
