@@ -17,7 +17,10 @@ central::~central()
 void central::addDevice(const QBluetoothDeviceInfo &device)
 {
     // If device is LowEnergy-device, add it to the list
-    if (device.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) { //BLE filter
+    // -> BLE filter
+    if (device.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration)
+    {
+
         m_devices.append(new DeviceInfo(device));
         qDebug() << "BLE found : " << m_devices.last()->getName() << m_devices.last()->getAddress();
     }

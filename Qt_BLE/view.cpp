@@ -3,6 +3,7 @@
 View::View(QWidget *parent)
     : QWidget(parent)
 {
+    m_control = Q_NULLPTR;
 
     m_scan = new QPushButton("SCAN", this);
     m_reset = new QPushButton("RESET", this);
