@@ -21,14 +21,19 @@ public:
 public:
     QBluetoothDeviceDiscoveryAgent * m_deviceDiscoveryAgent;
     QList<DeviceInfo *> m_devices;
-    QLowEnergyController * m_controller;
+    //QLowEnergyController * m_controller;
     
     DeviceInfo * m_nRFDevice;
     DeviceHandler * m_nRFHandler;
-
+    
+signals:
+    void sgToView(const QString & _str);
+    
+    
 public slots:
     void addDevice(const QBluetoothDeviceInfo &device);
     void slStartScanning(void);
+    void slToView(const QString &_str);
 };
 
 #endif // CENTRAL_H

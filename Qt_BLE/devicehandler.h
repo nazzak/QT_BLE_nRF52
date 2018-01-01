@@ -17,8 +17,12 @@ public:
     DeviceHandler(QObject *parent = 0);
     
     QLowEnergyController *m_control;
-    QLowEnergyService *m_service;
-    QLowEnergyDescriptor m_notificationDesc;
+    
+    QLowEnergyService * m_service;
+    QLowEnergyService * m_serviceBatt;
+    QLowEnergyService * m_serviceDeviceInfo;
+    
+    QLowEnergyDescriptor m_notificationDesc, m_notificationBatt;
     DeviceInfo *m_currentDevice;
     
     // Statistics
@@ -33,14 +37,6 @@ public:
     void setDevice(DeviceInfo *device);
     bool measuring() const;
     bool alive() const;
-
-    // Statistics
-    int hr() const;
-    int time() const;
-    float average() const;
-    int maxHR() const;
-    int minHR() const;
-    float calories() const;
     
     //QLowEnergyController
     void serviceDiscovered(const QBluetoothUuid &);
@@ -48,13 +44,14 @@ public:
     
     //QLowEnergyService
     void serviceStateChanged(QLowEnergyService::ServiceState s);
-    void updateHeartRateValue(const QLowEnergyCharacteristic &c,
+    void updateValue(const QLowEnergyCharacteristic &c,
                               const QByteArray &value);
     void confirmedDescriptorWrite(const QLowEnergyDescriptor &d,
                                   const QByteArray &value);
     
-    void addMeasurement(int value);
     bool m_foundHeartRateService;
+    bool m_foundDeviceInfoService;
+    bool m_foundBatteryService;
     bool m_measuring;
     int m_currentValue, m_min, m_max, m_sum;
     float m_avg, m_calories;
@@ -63,6 +60,7 @@ signals:
     void measuringChanged();
     void aliveChanged();
     void statsChanged();
+    void sgTextToPrint(const QString &_str);
 
 public slots:
     void startMeasurement();
