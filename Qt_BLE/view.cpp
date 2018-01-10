@@ -1,10 +1,14 @@
+
+
 #include "view.h"
 
-View::View(QWidget *parent)
-    : QWidget(parent)
-{
-    m_central = Q_NULLPTR;
+View::View(QWidget *parent) : QWidget(parent),
+     m_central(Q_NULLPTR)
 
+{
+    /*
+     * Creating instances
+     */
     m_scan = new QPushButton("SCAN", this);
     m_reset = new QPushButton("RESET", this);
     m_textView = new QTextBrowser(this);
@@ -17,6 +21,7 @@ View::View(QWidget *parent)
 
     connect(m_scan, &QPushButton::clicked, this, &View::slScanButton);
     connect(m_reset, &QPushButton::clicked, this, &View::slResetScan);
+
 }
 
 View::~View()
@@ -58,3 +63,5 @@ void View::slToPrint(const QString &_str)
 {
     m_textView->append(_str);
 }
+
+

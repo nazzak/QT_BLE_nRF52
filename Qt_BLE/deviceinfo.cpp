@@ -1,6 +1,6 @@
 #include "deviceinfo.h"
 
-DeviceInfo::DeviceInfo()
+DeviceInfo::DeviceInfo(QObject *parent) : QObject(parent)
 {
 }
 

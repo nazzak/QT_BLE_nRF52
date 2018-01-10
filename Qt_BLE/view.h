@@ -14,6 +14,9 @@ class View : public QWidget
 
 public:
     View(QWidget *parent = 0);
+    View(const View& _a);
+    View& operator =(const View& _a);
+    
     ~View();
 
     QVBoxLayout m_vBox;
@@ -21,10 +24,14 @@ public:
     QPushButton * m_scan;
     QPushButton * m_reset;
     central * m_central;
+    
 public slots:
     void slScanButton();
     void slResetScan();
     void slToPrint(const QString &_str);
+
+
+
 
 };
 

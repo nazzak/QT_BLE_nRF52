@@ -2,21 +2,18 @@
 #include <QtEndian>
 #include <QRandomGenerator>
 
-DeviceHandler::DeviceHandler(QObject *parent) : QObject(parent)
+DeviceHandler::DeviceHandler(QObject *parent) : QObject(parent),
+    m_currentDevice(Q_NULLPTR),
+    m_foundHeartRateService(false),
+    m_foundDeviceInfoService(false),
+    m_foundBatteryService(false),
+    m_measuring(false),
+    m_currentValue(0),
+    m_min(0), m_max(0), m_sum(0), m_avg(0),
+    m_calories(0), m_control(Q_NULLPTR),
+    m_service(Q_NULLPTR), m_serviceBatt(Q_NULLPTR), m_serviceDeviceInfo(Q_NULLPTR)
 {
-    m_currentDevice = 0;
-    m_foundHeartRateService = false;
-    m_foundDeviceInfoService = false;
-    m_foundBatteryService = false;
-    m_measuring = false;
-    m_currentValue = 0;
-    m_min = 0;
-    m_max = 0;
-    m_sum = 0;
-    m_avg = 0;
-    m_calories = 0;
-    m_control = 0;
-    m_service = m_serviceBatt = m_serviceDeviceInfo = 0;
+    
 }
 
 
@@ -46,8 +43,8 @@ void DeviceHandler::setDevice(DeviceInfo *device)
         connect(m_control, &QLowEnergyController::discoveryFinished, this, &DeviceHandler::serviceScanDone);
         connect(m_control, static_cast<void (QLowEnergyController::*)(QLowEnergyController::Error)>(&QLowEnergyController::error),
                 this, [this]() {
-                    qDebug() << "Cannot connect to remote device .";
-                });
+            qDebug() << "Cannot connect to remote device .";
+        });
         
         connect(m_control, &QLowEnergyController::connected, this, [this]() {
             qDebug() << "Controller connected. Search services...";
@@ -171,40 +168,40 @@ void DeviceHandler::serviceScanDone()
 void DeviceHandler::serviceStateChanged(QLowEnergyService::ServiceState s)
 {
     switch (s) {
-        case QLowEnergyService::DiscoveringServices:
-            qDebug() << "Discovering services...";
-            break;
-        case QLowEnergyService::ServiceDiscovered:
-        {
-            qDebug() << "Service discovered.";
-            
-            // Configure the notification on the HR characteristic
-            const QLowEnergyCharacteristic hrChar = m_service->characteristic(QBluetoothUuid(QBluetoothUuid::HeartRateMeasurement));
-            if (hrChar.isValid()) {
-                m_notificationDesc = hrChar.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-                if (m_notificationDesc.isValid())
-                    m_service->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
-            }
-            
-            // Configure the notification on the Battery characteristic
-            const QLowEnergyCharacteristic battChar = m_serviceBatt->characteristic(QBluetoothUuid(QBluetoothUuid::BatteryLevel));
-            if (battChar.isValid()) {
-                m_notificationBatt = battChar.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-                if (m_notificationBatt.isValid())
-                    m_serviceBatt->writeDescriptor(m_notificationBatt, QByteArray::fromHex("0100"));
-            }
-            
-            // Configure Device Info characteristic
-            const QLowEnergyCharacteristic DeviceInfoChar = m_serviceDeviceInfo->characteristic(QBluetoothUuid(QBluetoothUuid::ManufacturerNameString));
-            if (DeviceInfoChar.isValid()) {
-                //
-            }
+    case QLowEnergyService::DiscoveringServices:
+        qDebug() << "Discovering services...";
+        break;
+    case QLowEnergyService::ServiceDiscovered:
+    {
+        qDebug() << "Service discovered.";
 
-            break;
+        // Configure the notification on the HR characteristic
+        const QLowEnergyCharacteristic hrChar = m_service->characteristic(QBluetoothUuid(QBluetoothUuid::HeartRateMeasurement));
+        if (hrChar.isValid()) {
+            m_notificationDesc = hrChar.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+            if (m_notificationDesc.isValid())
+                m_service->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
         }
-        default:
-            //nothing for now
-            break;
+
+        // Configure the notification on the Battery characteristic
+        const QLowEnergyCharacteristic battChar = m_serviceBatt->characteristic(QBluetoothUuid(QBluetoothUuid::BatteryLevel));
+        if (battChar.isValid()) {
+            m_notificationBatt = battChar.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+            if (m_notificationBatt.isValid())
+                m_serviceBatt->writeDescriptor(m_notificationBatt, QByteArray::fromHex("0100"));
+        }
+
+        // Configure Device Info characteristic
+        const QLowEnergyCharacteristic DeviceInfoChar = m_serviceDeviceInfo->characteristic(QBluetoothUuid(QBluetoothUuid::ManufacturerNameString));
+        if (DeviceInfoChar.isValid()) {
+            //
+        }
+
+        break;
+    }
+    default:
+        //nothing for now
+        break;
     }
     
     emit aliveChanged();
@@ -217,15 +214,15 @@ void DeviceHandler::updateValue(const QLowEnergyCharacteristic &c, const QByteAr
     
     if (c.uuid() == QBluetoothUuid(QBluetoothUuid::HeartRateMeasurement))
     {
-    
-    //Heart Rate
-    int hrvalue = 0;
-    if (flags & 0x1) // HR 16 bit? otherwise 8 bit
-        hrvalue = (int)qFromLittleEndian<quint16>(data[1]);
-    else
-        hrvalue = (int)data[1];
-    
-    qDebug() << "hrvalue : " << hrvalue;
+
+        //Heart Rate
+        int hrvalue = 0;
+        if (flags & 0x1) // HR 16 bit? otherwise 8 bit
+            hrvalue = (int)qFromLittleEndian<quint16>(data[1]);
+        else
+            hrvalue = (int)data[1];
+
+        qDebug() << "hrvalue : " << hrvalue;
         emit sgTextToPrint("hrvalue : " + QString::number(hrvalue));
     }
     
@@ -263,10 +260,10 @@ void DeviceHandler::disconnectService()
     
     //disable notifications
     if (m_notificationDesc.isValid() &&
-        m_notificationBatt.isValid() &&
-        m_service && m_serviceBatt &&
-        m_notificationDesc.value() == QByteArray::fromHex("0100") &&
-        m_notificationBatt.value() == QByteArray::fromHex("0100"))
+            m_notificationBatt.isValid() &&
+            m_service && m_serviceBatt &&
+            m_notificationDesc.value() == QByteArray::fromHex("0100") &&
+            m_notificationBatt.value() == QByteArray::fromHex("0100"))
     {
         m_service->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0000"));
     } else {
@@ -290,4 +287,9 @@ bool DeviceHandler::alive() const
         return m_service->state() == QLowEnergyService::ServiceDiscovered;
 
     return false;
+}
+
+DeviceHandler::~DeviceHandler()
+{
+    
 }

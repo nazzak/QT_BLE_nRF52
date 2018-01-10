@@ -1,5 +1,4 @@
 #include "view.h"
-#include "central.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

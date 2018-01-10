@@ -16,13 +16,16 @@ class central : public QObject
     Q_OBJECT
 public:
     explicit central(QObject *parent = nullptr);
+    central(const central& _a);
+    central& operator =(const central& _a);
+
     ~central();
 
 public:
     QBluetoothDeviceDiscoveryAgent * m_deviceDiscoveryAgent;
-    QList<DeviceInfo *> m_devices;
-    //QLowEnergyController * m_controller;
-    
+    QList<DeviceInfo *> m_devicesList;
+
+private:
     DeviceInfo * m_nRFDevice;
     DeviceHandler * m_nRFHandler;
     

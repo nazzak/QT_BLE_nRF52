@@ -15,7 +15,12 @@ class DeviceHandler : public QObject
 
 public:
     DeviceHandler(QObject *parent = 0);
-    
+    DeviceHandler(const DeviceHandler& _a);
+    DeviceHandler& operator =(const DeviceHandler& _a);
+
+    ~DeviceHandler();
+
+public:
     QLowEnergyController *m_control;
     
     QLowEnergyService * m_service;
@@ -45,7 +50,7 @@ public:
     //QLowEnergyService
     void serviceStateChanged(QLowEnergyService::ServiceState s);
     void updateValue(const QLowEnergyCharacteristic &c,
-                              const QByteArray &value);
+                     const QByteArray &value);
     void confirmedDescriptorWrite(const QLowEnergyDescriptor &d,
                                   const QByteArray &value);
     

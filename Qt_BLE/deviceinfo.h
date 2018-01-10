@@ -13,7 +13,7 @@ class DeviceInfo: public QObject
     Q_OBJECT
 
 public:
-    DeviceInfo();
+    DeviceInfo(QObject *parent = nullptr);
     DeviceInfo(const QBluetoothDeviceInfo &d);
     QString getAddress() const;
     QString getName() const;
