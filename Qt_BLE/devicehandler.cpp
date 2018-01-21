@@ -1,8 +1,11 @@
 #include "devicehandler.h"
 #include <QtEndian>
-#include <QRandomGenerator>
+//#include <QRandomGenerator>
+
 
 DeviceHandler::DeviceHandler(QObject *parent) : QObject(parent),
+    m_control(Q_NULLPTR), m_service(Q_NULLPTR),
+    m_serviceBatt(Q_NULLPTR), m_serviceDeviceInfo(Q_NULLPTR),
     m_currentDevice(Q_NULLPTR),
     m_foundHeartRateService(false),
     m_foundDeviceInfoService(false),
@@ -10,12 +13,10 @@ DeviceHandler::DeviceHandler(QObject *parent) : QObject(parent),
     m_measuring(false),
     m_currentValue(0),
     m_min(0), m_max(0), m_sum(0), m_avg(0),
-    m_calories(0), m_control(Q_NULLPTR),
-    m_service(Q_NULLPTR), m_serviceBatt(Q_NULLPTR), m_serviceDeviceInfo(Q_NULLPTR)
+    m_calories(0)
 {
     
 }
-
 
 void DeviceHandler::setDevice(DeviceInfo *device)
 {
@@ -291,5 +292,23 @@ bool DeviceHandler::alive() const
 
 DeviceHandler::~DeviceHandler()
 {
-    
+    if(m_control)
+        delete m_control;
+    m_control = Q_NULLPTR;
+
+    if(m_service)
+        delete m_service;
+    m_service = Q_NULLPTR;
+
+    if(m_serviceBatt)
+        delete m_serviceBatt;
+    m_serviceBatt = Q_NULLPTR;
+
+    if(m_serviceDeviceInfo)
+        delete m_serviceDeviceInfo;
+    m_serviceDeviceInfo = Q_NULLPTR;
+
+    if(m_currentDevice)
+        delete m_currentDevice;
+    m_currentDevice = Q_NULLPTR;
 }

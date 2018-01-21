@@ -1,10 +1,9 @@
-
-
 #include "view.h"
 
-View::View(QWidget *parent) : QWidget(parent),
-     m_central(Q_NULLPTR)
 
+View::View(QWidget *parent) : QWidget(parent),
+    m_textView(Q_NULLPTR), m_scan(Q_NULLPTR),
+    m_reset(Q_NULLPTR), m_central(Q_NULLPTR)
 {
     /*
      * Creating instances
@@ -22,20 +21,6 @@ View::View(QWidget *parent) : QWidget(parent),
     connect(m_scan, &QPushButton::clicked, this, &View::slScanButton);
     connect(m_reset, &QPushButton::clicked, this, &View::slResetScan);
 
-}
-
-View::~View()
-{
-    delete m_central;
-    delete m_scan;
-    delete m_reset;
-    // need to delete qtextview
-
-    m_central = Q_NULLPTR;
-    m_scan = Q_NULLPTR;
-    m_reset = Q_NULLPTR;
-
-    qDebug() << "delete View";
 }
 
 void View::slScanButton()
@@ -64,4 +49,24 @@ void View::slToPrint(const QString &_str)
     m_textView->append(_str);
 }
 
+View::~View()
+{
+    if(m_central)
+        delete m_central;
 
+    if(m_scan)
+        delete m_scan;
+
+    if(m_reset)
+        delete m_reset;
+
+    if(m_textView)
+        delete m_textView;
+
+    m_central = Q_NULLPTR;
+    m_scan = Q_NULLPTR;
+    m_reset = Q_NULLPTR;
+    m_textView = Q_NULLPTR;
+
+    qDebug() << "delete View";
+}

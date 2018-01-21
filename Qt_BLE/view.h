@@ -30,9 +30,6 @@ public slots:
     void slResetScan();
     void slToPrint(const QString &_str);
 
-
-
-
 };
 
 #endif // VIEW_H
